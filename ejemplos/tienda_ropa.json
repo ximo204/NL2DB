@@ -1,0 +1,60 @@
+{
+  "_descripcion_usuario": "Tengo productos, cada uno con un nombre, un precio y una talla. También tengo empleados, cada uno con su nombre y su fecha de contratación. Cada venta la realiza un empleado y puede incluir varios productos.",
+
+  "entidades": [
+    {
+      "nombre": "Producto",
+      "atributos": [
+        { "nombre": "id_producto", "tipo": "INTEGER",       "clave_primaria": true,  "nullable": false, "inferido": true,
+          "razon": "El usuario describe 'productos' pero no menciona cómo identificar a cada uno; se añade un identificador entero por convención para hacer de clave primaria." },
+        { "nombre": "nombre",      "tipo": "VARCHAR(100)",  "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'un nombre' sin precisar tipo ni longitud; se asume cadena de hasta 100 caracteres, suficiente para nombres de producto comerciales." },
+        { "nombre": "precio",      "tipo": "DECIMAL(10,2)", "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'un precio' sin precisar formato; se asume un número decimal con dos cifras tras la coma, que es el estándar habitual para representar moneda." },
+        { "nombre": "talla",       "tipo": "VARCHAR(10)",   "clave_primaria": false, "nullable": true,  "inferido": false }
+      ]
+    },
+    {
+      "nombre": "Empleado",
+      "atributos": [
+        { "nombre": "id_empleado",        "tipo": "INTEGER",      "clave_primaria": true,  "nullable": false, "inferido": true,
+          "razon": "El usuario describe 'empleados' pero no menciona cómo identificar a cada uno; se añade un identificador entero por convención para hacer de clave primaria." },
+        { "nombre": "nombre",             "tipo": "VARCHAR(100)", "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'su nombre' sin precisar tipo ni longitud; se asume cadena de hasta 100 caracteres, suficiente para nombre y apellidos." },
+        { "nombre": "fecha_contratacion", "tipo": "DATE",         "clave_primaria": false, "nullable": true,  "inferido": false }
+      ]
+    },
+    {
+      "nombre": "Venta",
+      "atributos": [
+        { "nombre": "id_venta",    "tipo": "INTEGER", "clave_primaria": true,  "nullable": false, "inferido": true,
+          "razon": "El usuario describe 'ventas' pero no menciona cómo identificar a cada una; se añade un identificador entero por convención para hacer de clave primaria." },
+        { "nombre": "fecha_venta", "tipo": "DATE",    "clave_primaria": false, "nullable": false, "inferido": false }
+      ]
+    }
+  ],
+  "relaciones": [
+    {
+      "nombre": "realiza",
+      "entidad_a": "Empleado",
+      "entidad_b": "Venta",
+      "cardinalidad_a": "1",
+      "cardinalidad_b": "N",
+      "participacion_a": "opcional",
+      "participacion_b": "obligatoria",
+      "atributos": []
+    },
+    {
+      "nombre": "incluye",
+      "entidad_a": "Venta",
+      "entidad_b": "Producto",
+      "cardinalidad_a": "N",
+      "cardinalidad_b": "N",
+      "participacion_a": "obligatoria",
+      "participacion_b": "opcional",
+      "atributos": [
+        { "nombre": "cantidad", "tipo": "INTEGER", "clave_primaria": false, "nullable": false, "inferido": false }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# Dependencias del prototipo.
+#
+# El generador de SQL es texto puro y no necesita nada externo.
+# El generador de modelo entidad-relación (§3.8) usa Graphviz:
+#   - graphviz: wrapper de Python que construye DOT y llama al binario.
+#   - Además requiere el binario `graphviz` instalado en el sistema
+#     (en Linux: `sudo apt install graphviz`). Sin él, render() falla
+#     con ExecutableNotFound.
+
+graphviz>=0.20
+
+# El gestor de comunicación (§3.3) en modo web usa Flask como servidor
+# que expone el controlador y sirve la interfaz al navegador.
+flask>=3.0
+
+# El módulo NLP (§3.5) tiene dos implementaciones:
+#   - ModuloNLPSimulado: no necesita nada externo.
+#   - ModuloNLPOllama: llama por HTTP al servidor local de OLLAMA usando
+#     únicamente `urllib` de la biblioteca estándar (no añade dependencias
+#     de Python). Hace falta tener OLLAMA instalado en el sistema y un
+#     modelo descargado, por ejemplo:
+#         curl -fsSL https://ollama.com/install.sh | sh
+#         ollama pull llama3.2
+#         ollama serve   # arranca el servidor en localhost:11434

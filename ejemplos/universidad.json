@@ -1,0 +1,119 @@
+{
+  "_descripcion_usuario": "Tengo profesores con su DNI, nombre, apellidos, email y fecha de contratación. Los profesores pueden supervisar a otros profesores: cada profesor tiene a lo sumo un supervisor. Cada profesor pertenece a un departamento. Los departamentos tienen un código y un nombre. Cada departamento tiene un director, que es uno de sus profesores. Hay cursos con código, nombre y créditos. Cada curso lo imparte un profesor concreto y se da en una sola aula; las aulas tienen un identificador y una capacidad. Los estudiantes tienen DNI, nombre y email. Cada estudiante se matricula en varios cursos: por cada matrícula guardamos la fecha y la nota final.",
+
+  "entidades": [
+    {
+      "nombre": "Profesor",
+      "atributos": [
+        { "nombre": "dni",                "tipo": "VARCHAR(9)",   "clave_primaria": true,  "nullable": false, "inferido": false },
+        { "nombre": "nombre",             "tipo": "VARCHAR(50)",  "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'nombre' como atributo del profesor sin precisar tipo ni longitud; se asume cadena de hasta 50 caracteres." },
+        { "nombre": "apellidos",          "tipo": "VARCHAR(100)", "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'apellidos' sin precisar longitud; se reserva más espacio que para el nombre porque los apellidos compuestos pueden ser largos." },
+        { "nombre": "email",              "tipo": "VARCHAR(100)", "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'email' sin precisar longitud; se asume cadena de hasta 100 caracteres, suficiente para la mayoría de direcciones." },
+        { "nombre": "fecha_contratacion", "tipo": "DATE",         "clave_primaria": false, "nullable": false, "inferido": false }
+      ]
+    },
+    {
+      "nombre": "Departamento",
+      "atributos": [
+        { "nombre": "codigo", "tipo": "VARCHAR(10)",  "clave_primaria": true,  "nullable": false, "inferido": false },
+        { "nombre": "nombre", "tipo": "VARCHAR(100)", "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'nombre' como atributo del departamento sin precisar tipo ni longitud; se asume cadena de hasta 100 caracteres." }
+      ]
+    },
+    {
+      "nombre": "Curso",
+      "atributos": [
+        { "nombre": "codigo",   "tipo": "VARCHAR(10)",  "clave_primaria": true,  "nullable": false, "inferido": false },
+        { "nombre": "nombre",   "tipo": "VARCHAR(100)", "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'nombre' como atributo del curso sin precisar tipo ni longitud; se asume cadena de hasta 100 caracteres." },
+        { "nombre": "creditos", "tipo": "INTEGER",      "clave_primaria": false, "nullable": false, "inferido": false }
+      ]
+    },
+    {
+      "nombre": "Aula",
+      "atributos": [
+        { "nombre": "id_aula",   "tipo": "VARCHAR(10)", "clave_primaria": true,  "nullable": false, "inferido": false },
+        { "nombre": "capacidad", "tipo": "INTEGER",     "clave_primaria": false, "nullable": false, "inferido": false }
+      ]
+    },
+    {
+      "nombre": "Estudiante",
+      "atributos": [
+        { "nombre": "dni",    "tipo": "VARCHAR(9)",   "clave_primaria": true,  "nullable": false, "inferido": false },
+        { "nombre": "nombre", "tipo": "VARCHAR(50)",  "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'nombre' como atributo del estudiante sin precisar tipo ni longitud; se asume cadena de hasta 50 caracteres." },
+        { "nombre": "email",  "tipo": "VARCHAR(100)", "clave_primaria": false, "nullable": false, "inferido": true,
+          "razon": "El usuario menciona 'email' sin precisar longitud; se asume cadena de hasta 100 caracteres, suficiente para la mayoría de direcciones." }
+      ]
+    }
+  ],
+
+  "relaciones": [
+    {
+      "nombre": "supervisa",
+      "entidad_a": "Profesor",
+      "entidad_b": "Profesor",
+      "cardinalidad_a": "1",
+      "cardinalidad_b": "N",
+      "participacion_a": "opcional",
+      "participacion_b": "opcional",
+      "atributos": []
+    },
+    {
+      "nombre": "pertenece_a",
+      "entidad_a": "Profesor",
+      "entidad_b": "Departamento",
+      "cardinalidad_a": "N",
+      "cardinalidad_b": "1",
+      "participacion_a": "obligatoria",
+      "participacion_b": "obligatoria",
+      "atributos": []
+    },
+    {
+      "nombre": "dirige",
+      "entidad_a": "Profesor",
+      "entidad_b": "Departamento",
+      "cardinalidad_a": "1",
+      "cardinalidad_b": "1",
+      "participacion_a": "opcional",
+      "participacion_b": "obligatoria",
+      "atributos": []
+    },
+    {
+      "nombre": "imparte",
+      "entidad_a": "Profesor",
+      "entidad_b": "Curso",
+      "cardinalidad_a": "1",
+      "cardinalidad_b": "N",
+      "participacion_a": "opcional",
+      "participacion_b": "obligatoria",
+      "atributos": []
+    },
+    {
+      "nombre": "se_da_en",
+      "entidad_a": "Curso",
+      "entidad_b": "Aula",
+      "cardinalidad_a": "1",
+      "cardinalidad_b": "1",
+      "participacion_a": "obligatoria",
+      "participacion_b": "opcional",
+      "atributos": []
+    },
+    {
+      "nombre": "matricula",
+      "entidad_a": "Estudiante",
+      "entidad_b": "Curso",
+      "cardinalidad_a": "N",
+      "cardinalidad_b": "N",
+      "participacion_a": "opcional",
+      "participacion_b": "opcional",
+      "atributos": [
+        { "nombre": "fecha",      "tipo": "DATE",         "clave_primaria": false, "nullable": false, "inferido": false },
+        { "nombre": "nota_final", "tipo": "DECIMAL(4,2)", "clave_primaria": false, "nullable": true,  "inferido": false }
+      ]
+    }
+  ]
+}

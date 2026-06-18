@@ -1,0 +1,26 @@
+{
+  "entidades": {
+    "Producto": {
+      "inicio": 6,
+      "fin": 63
+    },
+    "Empleado": {
+      "inicio": 78,
+      "fin": 139
+    },
+    "Venta": {
+      "inicio": 145,
+      "fin": 207
+    }
+  },
+  "relaciones": {
+    "realiza": {
+      "inicio": 140,
+      "fin": 173
+    },
+    "incluye": {
+      "inicio": 176,
+      "fin": 207
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "entidades": {
+    "Profesor": {
+      "inicio": 6,
+      "fin": 78
+    },
+    "Departamento": {
+      "inicio": 220,
+      "fin": 267
+    },
+    "Curso": {
+      "inicio": 335,
+      "fin": 376
+    },
+    "Aula": {
+      "inicio": 446,
+      "fin": 496
+    },
+    "Estudiante": {
+      "inicio": 497,
+      "fin": 540
+    }
+  },
+  "relaciones": {
+    "supervisa": {
+      "inicio": 79,
+      "fin": 176
+    },
+    "pertenece_a": {
+      "inicio": 177,
+      "fin": 219
+    },
+    "dirige": {
+      "inicio": 268,
+      "fin": 334
+    },
+    "imparte": {
+      "inicio": 377,
+      "fin": 419
+    },
+    "se_da_en": {
+      "inicio": 422,
+      "fin": 444
+    },
+    "matricula": {
+      "inicio": 541,
+      "fin": 642
+    }
+  }
+}
