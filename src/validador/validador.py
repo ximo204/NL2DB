@@ -63,7 +63,7 @@ _PLANTILLA = """<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Validador — prototipo TFG</title>
+<title>Validador</title>
 <style>
   body {{
     font-family: system-ui, sans-serif;

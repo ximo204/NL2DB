@@ -1,14 +1,4 @@
-# Punto de entrada provisional del validador (§3.9).
-#
-# Carga uno de los ejemplos del directorio ejemplos/ (con su JSON, su
-# texto original embebido como _descripcion_usuario y su mapa de
-# trazabilidad construido a mano), genera el diagrama E/R con el
-# generador del §3.8 y produce el HTML autónomo del validador en
-# salidas/.
-#
-# Este script juega el papel de "controlador" mínimo mientras no exista
-# el real (§3.4): se limita a invocar a cada pieza en el orden adecuado
-# y a pasarle a la siguiente lo que la anterior produjo.
+# Genera el HTML del validador para un ejemplo dado sin pasar por el servidor web.
 
 import json
 import sys
@@ -24,10 +14,6 @@ def main(nombre_ejemplo: str) -> None:
     ruta_json = raiz / "ejemplos" / f"{nombre_ejemplo}.json"
     ruta_trazabilidad = raiz / "ejemplos" / f"{nombre_ejemplo}_trazabilidad.json"
 
-    # Cargamos el JSON del modelo y extraemos el texto original que
-    # tenemos embebido como metadato (mientras no exista el gestor de
-    # RI completo, que es quien debería custodiar texto y modelo
-    # juntos según el §3.7).
     modelo = cargar_desde_archivo(ruta_json)
     texto = modelo.get("_descripcion_usuario", "")
     if not texto:
@@ -35,13 +21,8 @@ def main(nombre_ejemplo: str) -> None:
             f"El ejemplo {nombre_ejemplo} no incluye _descripcion_usuario."
         )
 
-    # El mapa de trazabilidad lo construimos a mano (§3.7.2) hasta que
-    # el módulo NLP pueble el JSON desde texto real y el gestor de RI
-    # construya la trazabilidad automáticamente.
     trazabilidad = json.loads(ruta_trazabilidad.read_text(encoding="utf-8"))
 
-    # Generamos el SVG con el módulo del §3.8. Lo dejamos en salidas/
-    # con un nombre por ejemplo para no pisar entre ejecuciones.
     ruta_svg_base = raiz / "salidas" / f"{nombre_ejemplo}_er"
     ruta_svg = GeneradorERGraphviz().generar(modelo, ruta_svg_base)
 
@@ -60,6 +41,4 @@ def main(nombre_ejemplo: str) -> None:
 
 
 if __name__ == "__main__":
-    # Sin argumentos lanza el ejemplo de la tienda de ropa por defecto,
-    # que es el del §3.7.1.
     main(sys.argv[1] if len(sys.argv) > 1 else "tienda_ropa")

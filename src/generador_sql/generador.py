@@ -1,55 +1,10 @@
-# Generador de SQL — §3.10 del TFG.
-#
-# A partir del JSON de la representación intermedia (§3.7.1) construye las
-# sentencias DDL que crean el esquema en un SGBD relacional. La memoria
-# describe este componente como una "interfaz abstracta" para soportar
-# distintos dialectos (MySQL, PostgreSQL, SQLite...). Por eso aquí tenemos
-# una base abstracta + una implementación concreta sobre SQL estándar.
-#
-# Las reglas que aplicamos son las del §2.4.2 (paso a tablas) y §3.10.1.
-# Dos cosas que el TFG remarca y que conviene tener bien presentes:
-#
-#   1) La participación de cada lado importa, no solo la cardinalidad.
-#      En 1:N la FK del lado N lleva NOT NULL si su participación es
-#      "obligatoria"; en 1:1 la FK va precisamente en el lado obligatorio
-#      (si solo uno lo es), no por defecto en entidad_a.
-#
-#   2) El nombre de la columna FK no puede ser simplemente el nombre de
-#      la PK referenciada: choca con la propia PK en relaciones reflexivas
-#      y consigo misma cuando hay varias relaciones entre el mismo par
-#      de entidades. Por eso prefijamos siempre con el nombre de la
-#      relación: <nombre_relacion>_<col_pk>.
-#
-# Resumen de reglas:
-#   - cada entidad         -> CREATE TABLE
-#   - cada atributo        -> columna con NOT NULL si nullable=false
-#   - clave_primaria=true  -> CONSTRAINT pk_<Tabla> PRIMARY KEY (...)
-#   - relación 1:N         -> FK en el lado N, columna <rel>_<col_pk>,
-#                             CONSTRAINT fk_<Tabla>_<rel>, NOT NULL si la
-#                             participación de ese lado es obligatoria
-#   - relación N:M         -> tabla intermedia con PK compuesta y dos FKs
-#                             (en la intermedia se usan los nombres de PK
-#                             directamente, sin prefijo: no colisionan)
-#   - relación 1:1         -> FK + UNIQUE en el lado obligatorio (si solo
-#                             uno lo es), o en entidad_a por defecto si
-#                             ambos son opcionales o ambos obligatorios
-#
-# El campo "inferido" del JSON no se usa aquí: es metainformación dirigida
-# al módulo validador (§3.9.1) para distinguir lo que dijo el usuario de
-# lo que rellenó el sistema. Para el SQL es irrelevante.
+# Generador de SQL estándar a partir del modelo relacional intermedio.
 
 from abc import ABC, abstractmethod
 
 
 class GeneradorSQL(ABC):
-    """Contrato común para todos los dialectos SQL.
-
-    Es la "interfaz abstracta" de la §3.10. La estructura general de las
-    sentencias y las reglas del §2.4.2 / §3.10.1 son las mismas para
-    cualquier SGBD; lo que cambia entre dialectos son detalles como los
-    nombres de los tipos. Por ahora solo tenemos un dialecto, pero
-    dejamos la jerarquía montada porque el TFG lo exige.
-    """
+    """Contrato común para todos los dialectos SQL."""
 
     @abstractmethod
     def generar(self, modelo):
@@ -99,7 +54,7 @@ class GeneradorSQLEstandar(GeneradorSQL):
                 lineas.append(fk["linea_columna"])
                 fks.append(fk)
 
-        # PRIMARY KEY de la entidad. Convención del §3.10.1: pk_<NombreTabla>.
+        # PRIMARY KEY de la entidad. Convención: pk_<NombreTabla>.
         # Si la PK es compuesta de varios atributos, todos van dentro del
         # mismo CONSTRAINT (no se puede repetir PRIMARY KEY en cada columna).
         nombres_pk = [a["nombre"] for a in entidad["atributos"] if a.get("clave_primaria")]
@@ -129,22 +84,8 @@ class GeneradorSQLEstandar(GeneradorSQL):
     def _fk_para_entidad(self, relacion, entidad, modelo):
         """Si la relación deposita una FK en `entidad`, devuelve sus datos.
 
-        Hay tres casos del §3.10.1 que generan FK en una tabla "normal"
-        (no intermedia):
-
-          - 1:N : la FK va en el lado N, referencia al lado 1.
-          - N:1 : igual, pero con los lados intercambiados.
-          - 1:1 : FK con UNIQUE en el lado que tiene participación
-                  obligatoria (si solo uno la tiene). Si ambos son
-                  opcionales o ambos obligatorios, por convención la
-                  ponemos en entidad_a.
-
-        La nulabilidad de la FK depende de la participación del lado que
-        la recibe: "obligatoria" -> NOT NULL, "opcional" -> admite NULL.
-        Esto es exactamente lo que añade el §2.4.2 con respecto a generar
-        SQL teniendo en cuenta la participación.
-
-        Las N:M no caen aquí: producen una tabla intermedia aparte.
+        Cubre 1:N, N:1 y 1:1. Las N:M producen una tabla intermedia aparte.
+        La participación del extremo receptor determina NOT NULL de la FK.
         """
         ca = relacion["cardinalidad_a"]
         cb = relacion["cardinalidad_b"]
@@ -177,8 +118,8 @@ class GeneradorSQLEstandar(GeneradorSQL):
                 nombre_constraint=f"fk_{nombre_entidad}_{nombre_relacion}",
             )
 
-        # 1:1 -> FK + UNIQUE. El lado donde va depende de la
-        # participación, no es siempre entidad_a (§2.4.2).
+        # 1:1 -> FK + UNIQUE. El lado donde va depende de la participación,
+        # no es siempre entidad_a.
         if ca == "1" and cb == "1":
             # Si solo B es obligatoria, la FK va en B referenciando a A.
             # En el resto de casos (solo A obligatoria, ambos opcionales,
@@ -235,7 +176,7 @@ class GeneradorSQLEstandar(GeneradorSQL):
     def _crear_tabla_intermedia(self, relacion, modelo):
         ea = relacion["entidad_a"]
         eb = relacion["entidad_b"]
-        # Convención del §3.10.1: <EntidadA>_<EntidadB>.
+        # Convención: <EntidadA>_<EntidadB>.
         nombre_tabla = f"{ea}_{eb}"
 
         col_a, tipo_a = self._pk_de(ea, modelo)
@@ -280,10 +221,8 @@ class GeneradorSQLEstandar(GeneradorSQL):
     # Utilidades pequeñas
 
     def _pk_de(self, nombre_entidad, modelo):
-        # Asumimos que la entidad tiene al menos un atributo con
-        # clave_primaria=true y que la PK es simple (un único atributo).
-        # El TFG no contempla ahora mismo PK compuestas en entidades
-        # "normales" — las tablas intermedias se construyen aparte.
+        # Solo PK simple. Las PK compuestas de tablas intermedias se
+        # construyen aparte en _crear_tabla_intermedia.
         entidad = next(e for e in modelo["entidades"] if e["nombre"] == nombre_entidad)
         pk = next(a for a in entidad["atributos"] if a.get("clave_primaria"))
         return pk["nombre"], pk["tipo"]

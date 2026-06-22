@@ -1,24 +1,4 @@
-# Gestor de comunicación — §3.3 del TFG, en modo interfaz web.
-#
-# Es la frontera externa del sistema: el único componente que habla
-# directamente con el usuario. Aquí lo realizamos como una aplicación web
-# (Flask), que es una de las formas que el §3.3 contempla explícitamente.
-# Su trabajo es recoger las acciones del usuario y presentar los resultados
-# que produce el controlador (§3.4); no contiene lógica de negocio.
-#
-# Pone alrededor del validador (§3.9) el "marco" interactivo que le faltaba:
-# el formulario de entrada y los botones de decisión del §3.9.3 (validar /
-# rechazar / revertir), que dejamos pendientes cuando el validador era un
-# HTML estático sin servidor.
-#
-# El módulo NLP está simulado: el usuario pega el texto de un ejemplo y el
-# stub (§3.5) reconoce ese texto y devuelve su JSON, como si el modelo de
-# lenguaje estuviera activo. Cuando exista la API real, se cambia el stub
-# por la implementación auténtica y este gestor no se entera.
-#
-# Aviso: es un prototipo de una sola sesión. El estado (modelo activo) vive
-# en el controlador compartido por toda la app; no está pensado para varios
-# usuarios simultáneos.
+# Gestor de comunicación: interfaz web Flask sobre el controlador. Prototipo de una sesión.
 
 import json
 import os
@@ -81,7 +61,7 @@ def crear_app() -> Flask:
 
     respuestas, registro = _cargar_registro()
 
-    # Selección del módulo NLP (§3.5) por variable de entorno.
+    # Selección del módulo NLP por variable de entorno.
     #   - NLP_BACKEND=ollama : LLM real local (qwen2.5:7b por defecto);
     #     acepta cualquier descripción.
     #   - sin variable        : ModuloNLPSimulado; solo conoce los textos
@@ -170,7 +150,7 @@ def crear_app() -> Flask:
             # texto coincide con un ejemplo conocido reutilizamos su
             # trazabilidad hecha a mano (más rica que la automática);
             # si no, dejamos que el gestor construya el mapa por
-            # alineamiento léxico (§3.7.2). El nombre del escenario lo
+            # alineamiento léxico. El nombre del escenario lo
             # decide el usuario (si lo deja vacío, el controlador usará
             # la fecha de hoy).
             if clave in registro:
@@ -303,7 +283,7 @@ def crear_app() -> Flask:
 
 PLANTILLA_INICIO = """<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"><title>NL2SQL — prototipo TFG</title>
+<head><meta charset="utf-8"><title>NL2SQL</title>
 <style>
   body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2em auto;
          padding: 0 1em; color: #222; }
@@ -431,7 +411,7 @@ PLANTILLA_INICIO = """<!DOCTYPE html>
 
 PLANTILLA_RESULTADO = """<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"><title>Revisión del modelo — prototipo TFG</title>
+<head><meta charset="utf-8"><title>Revisión del modelo</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1em; color: #222; }
   h1 { color: #555; font-size: 1.2em; }
@@ -482,7 +462,7 @@ PLANTILLA_RESULTADO = """<!DOCTYPE html>
 
 PLANTILLA_SQL = """<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"><title>SQL generado — prototipo TFG</title>
+<head><meta charset="utf-8"><title>SQL generado</title>
 <style>
   body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2em auto;
          padding: 0 1em; color: #222; }

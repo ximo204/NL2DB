@@ -1,11 +1,5 @@
-# Demostración de la fase ETL (§3.6) sin LLM.
-#
-# Le pasamos a la ETL varias "respuestas crudas" sintéticas que imitan lo
-# que devolvería un modelo de lenguaje, y comprobamos que en cada caso o
-# bien produce un JSON interno limpio o bien reporta un error claro. Es la
-# versión "ejemplos de prueba preparados" del §1.4 aplicada a este módulo:
-# nos permite tener la ETL completamente probada antes de que exista el
-# módulo NLP real.
+# Demostración de la fase ETL sin LLM: pasa respuestas crudas sintéticas y comprueba
+# que produce un JSON limpio o reporta un error claro.
 
 import json
 
