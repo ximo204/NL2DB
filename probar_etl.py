@@ -40,6 +40,13 @@ casos = {
 
     "6. La respuesta no contiene JSON (error esperado)":
         "Lo siento, no he sabido modelar eso.",
+
+    "7. Relación con una entidad no definida (error esperado)":
+        '{"entidades": [{"nombre": "A", "atributos": ['
+        '{"nombre": "id", "tipo": "INTEGER", "clave_primaria": true}]}],'
+        '"relaciones": [{"nombre": "rel", "entidad_a": "A", "entidad_b": "B",'
+        '"cardinalidad_a": "1", "cardinalidad_b": "N",'
+        '"participacion_a": "opcional", "participacion_b": "opcional"}]}',
 }
 
 

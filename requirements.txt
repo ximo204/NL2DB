@@ -20,5 +20,5 @@ flask>=3.0
 #     de Python). Hace falta tener OLLAMA instalado en el sistema y un
 #     modelo descargado, por ejemplo:
 #         curl -fsSL https://ollama.com/install.sh | sh
-#         ollama pull llama3.2
+#         ollama pull qwen2.5:7b
 #         ollama serve   # arranca el servidor en localhost:11434

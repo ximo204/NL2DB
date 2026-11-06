@@ -179,8 +179,20 @@ class GeneradorSQLEstandar(GeneradorSQL):
         # Convención: <EntidadA>_<EntidadB>.
         nombre_tabla = f"{ea}_{eb}"
 
-        col_a, tipo_a = self._pk_de(ea, modelo)
-        col_b, tipo_b = self._pk_de(eb, modelo)
+        pk_a, tipo_a = self._pk_de(ea, modelo)
+        pk_b, tipo_b = self._pk_de(eb, modelo)
+
+        # Si ambas PK se llaman igual (siempre ocurre en una relación
+        # reflexiva), el nombre directo colisionaría dentro de la tabla.
+        # Convención en ese caso: <nombre_relacion>_a_<pk> y _b_<pk>.
+        col_a, col_b = pk_a, pk_b
+        if pk_a == pk_b:
+            col_a = f"{relacion['nombre']}_a_{pk_a}"
+            col_b = f"{relacion['nombre']}_b_{pk_b}"
+
+        # Las dos FK de una relación reflexiva apuntan a la misma tabla,
+        # así que sus constraints se distinguen por el lado de la relación.
+        sufijo_a, sufijo_b = (ea, eb) if ea != eb else ("a", "b")
 
         # En la tabla intermedia las dos FK son siempre NOT NULL,
         # porque forman parte de la PK compuesta. La participación de
@@ -203,12 +215,12 @@ class GeneradorSQLEstandar(GeneradorSQL):
             f"PRIMARY KEY ({col_a}, {col_b})"
         )
         lineas.append(
-            f"CONSTRAINT fk_{nombre_tabla}_{ea} "
-            f"FOREIGN KEY ({col_a}) REFERENCES {ea}({col_a})"
+            f"CONSTRAINT fk_{nombre_tabla}_{sufijo_a} "
+            f"FOREIGN KEY ({col_a}) REFERENCES {ea}({pk_a})"
         )
         lineas.append(
-            f"CONSTRAINT fk_{nombre_tabla}_{eb} "
-            f"FOREIGN KEY ({col_b}) REFERENCES {eb}({col_b})"
+            f"CONSTRAINT fk_{nombre_tabla}_{sufijo_b} "
+            f"FOREIGN KEY ({col_b}) REFERENCES {eb}({pk_b})"
         )
 
         cuerpo = ",\n    ".join(lineas)

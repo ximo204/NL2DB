@@ -57,10 +57,24 @@ class FaseETL:
         if not isinstance(relaciones, list):
             raise ErrorETL("El campo 'relaciones' debe ser una lista.")
 
-        return {
+        modelo = {
             "entidades": [self._normalizar_entidad(e) for e in entidades],
             "relaciones": [self._normalizar_relacion(r) for r in relaciones],
         }
+        self._comprobar_integridad_referencial(modelo)
+        return modelo
+
+    def _comprobar_integridad_referencial(self, modelo: dict) -> None:
+        # Sin esta comprobación, una relación hacia una entidad inexistente
+        # se perdería en silencio o rompería la generación del SQL.
+        definidas = {e["nombre"] for e in modelo["entidades"]}
+        for relacion in modelo["relaciones"]:
+            for campo in ("entidad_a", "entidad_b"):
+                if relacion[campo] not in definidas:
+                    raise ErrorETL(
+                        f"La relación '{relacion['nombre']}' hace referencia a "
+                        f"la entidad '{relacion[campo]}', que no está definida."
+                    )
 
     def _normalizar_entidad(self, entidad) -> dict:
         if not isinstance(entidad, dict):
