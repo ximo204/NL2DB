@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 472" role="img" aria-labelledby="title desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title id="title">NL2DB architecture</title>
+  <desc id="desc">Phase 1: the user's description goes through the NLP module, ETL, the intermediate representation manager, the ER generator and the validator. The validator can reject and return to the user, or move through the scenario history. Phase 2: once validated, the SQL generator produces DDL that the user reviews.</desc>
+  <defs>
+    <marker id="flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#3d3d3a"/>
+    </marker>
+    <marker id="flecha-tenue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+    <style>
+      .caja { stroke-width: 1; }
+      .gris { fill: #3d3d3a; stroke: #2a2a28; }
+      .verde { fill: #0a4f42; stroke: #083d33; }
+      .oxido { fill: #712b13; stroke: #5a210e; }
+      .morado { fill: #534ab7; stroke: #433a9c; }
+      .titulo { fill: #ffffff; font-size: 15px; font-weight: 600; text-anchor: middle; }
+      .detalle { fill: #e5e7eb; font-size: 12px; text-anchor: middle; }
+      .fase { fill: #57606a; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; }
+      .etiqueta { fill: #3d3d3a; font-size: 12px; text-anchor: middle; }
+      .linea { fill: none; stroke: #3d3d3a; stroke-width: 2; marker-end: url(#flecha); }
+      .tenue { fill: none; stroke: #6b7280; stroke-width: 1.5; stroke-dasharray: 5 4; marker-end: url(#flecha-tenue); }
+    </style>
+  </defs>
+
+  <rect width="1000" height="472" rx="12" fill="#ffffff"/>
+
+  <rect x="14" y="14" width="972" height="294" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text class="fase" x="32" y="40">PHASE 1: MODEL GENERATION AND REVIEW</text>
+
+  <rect x="14" y="324" width="972" height="134" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text class="fase" x="32" y="350">PHASE 2: SQL GENERATION</text>
+
+  <g class="linea">
+    <path d="M190 95 H215"/>
+    <path d="M365 95 H390"/>
+    <path d="M540 95 H565"/>
+    <path d="M655 135 V215"/>
+    <path d="M565 255 H480"/>
+    <path d="M300 255 H115 V135"/>
+    <path d="M390 295 V375"/>
+    <path d="M480 415 H565"/>
+  </g>
+  <g class="tenue">
+    <path d="M745 95 H815" marker-start="url(#flecha-tenue)"/>
+    <path d="M430 215 V175 H600 V135"/>
+  </g>
+
+  <text class="etiqueta" x="780" y="86">save /</text>
+  <text class="etiqueta" x="780" y="114">restore</text>
+  <text class="etiqueta" x="515" y="167">Previous / next</text>
+  <text class="etiqueta" x="208" y="247">Reject: new description</text>
+  <rect x="362" y="306" width="56" height="20" fill="#ffffff"/>
+  <text class="etiqueta" x="390" y="320" font-weight="600">Validate</text>
+
+  <g>
+    <rect class="caja gris" x="40" y="55" width="150" height="80" rx="9"/>
+    <text class="titulo" x="115" y="84">User</text>
+    <text class="detalle" x="115" y="105">Enters a natural-</text>
+    <text class="detalle" x="115" y="121">language description</text>
+  </g>
+  <g>
+    <rect class="caja verde" x="215" y="55" width="150" height="80" rx="9"/>
+    <text class="titulo" x="290" y="84">NLP module</text>
+    <text class="detalle" x="290" y="105">Builds the prompt,</text>
+    <text class="detalle" x="290" y="121">queries the LLM</text>
+  </g>
+  <g>
+    <rect class="caja gris" x="390" y="55" width="150" height="80" rx="9"/>
+    <text class="titulo" x="465" y="84">ETL</text>
+    <text class="detalle" x="465" y="105">Extracts, transforms</text>
+    <text class="detalle" x="465" y="121">and validates the JSON</text>
+  </g>
+  <g>
+    <rect class="caja oxido" x="565" y="55" width="180" height="80" rx="9"/>
+    <text class="titulo" x="655" y="75" style="font-size:14px">Intermediate</text>
+    <text class="titulo" x="655" y="92" style="font-size:14px">representation manager</text>
+    <text class="detalle" x="655" y="112">Stores the model,</text>
+    <text class="detalle" x="655" y="127">builds traceability</text>
+  </g>
+  <g>
+    <rect class="caja gris" x="815" y="55" width="150" height="80" rx="9"/>
+    <text class="titulo" x="890" y="84">Scenario history</text>
+    <text class="detalle" x="890" y="105">All interactions,</text>
+    <text class="detalle" x="890" y="121">saved to disk</text>
+  </g>
+  <g>
+    <rect class="caja verde" x="565" y="215" width="180" height="80" rx="9"/>
+    <text class="titulo" x="655" y="247">ER generator</text>
+    <text class="detalle" x="655" y="269">Renders the diagram</text>
+  </g>
+  <g>
+    <rect class="caja morado" x="300" y="215" width="180" height="80" rx="9"/>
+    <text class="titulo" x="390" y="240">Validator</text>
+    <text class="detalle" x="390" y="261">Diagram, text and</text>
+    <text class="detalle" x="390" y="277">bidirectional traceability</text>
+  </g>
+  <g>
+    <rect class="caja verde" x="300" y="375" width="180" height="70" rx="9"/>
+    <text class="titulo" x="390" y="400">SQL generator</text>
+    <text class="detalle" x="390" y="421">Translates the model</text>
+    <text class="detalle" x="390" y="436">into DDL statements</text>
+  </g>
+  <g>
+    <rect class="caja gris" x="565" y="375" width="180" height="70" rx="9"/>
+    <text class="titulo" x="655" y="405">User</text>
+    <text class="detalle" x="655" y="427">Reviews the SQL</text>
+  </g>
+</svg>

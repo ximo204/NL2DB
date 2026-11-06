@@ -83,10 +83,11 @@ class FaseETL:
         atributos = entidad.get("atributos")
         if not isinstance(atributos, list) or not atributos:
             raise ErrorETL(f"La entidad '{nombre}' no tiene atributos.")
-        return {
-            "nombre": nombre,
-            "atributos": [self._normalizar_atributo(a, nombre) for a in atributos],
-        }
+        normalizados = [self._normalizar_atributo(a, nombre) for a in atributos]
+        # Sin clave primaria no hay a qué apuntar con una clave ajena.
+        if not any(a["clave_primaria"] for a in normalizados):
+            raise ErrorETL(f"La entidad '{nombre}' no tiene clave primaria.")
+        return {"nombre": nombre, "atributos": normalizados}
 
     def _normalizar_atributo(self, atributo, contexto: str) -> dict:
         if not isinstance(atributo, dict):

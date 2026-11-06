@@ -176,8 +176,15 @@ class GeneradorSQLEstandar(GeneradorSQL):
     def _crear_tabla_intermedia(self, relacion, modelo):
         ea = relacion["entidad_a"]
         eb = relacion["entidad_b"]
-        # Convención: <EntidadA>_<EntidadB>.
+        # Convención: <EntidadA>_<EntidadB>. Si hay varias N:M entre las mismas
+        # entidades, se añade el nombre de la relación para no repetir tabla.
         nombre_tabla = f"{ea}_{eb}"
+        repetidas = [
+            r for r in modelo.get("relaciones", [])
+            if self._es_n_a_m(r) and r["entidad_a"] == ea and r["entidad_b"] == eb
+        ]
+        if len(repetidas) > 1:
+            nombre_tabla = f"{nombre_tabla}_{relacion['nombre']}"
 
         pk_a, tipo_a = self._pk_de(ea, modelo)
         pk_b, tipo_b = self._pk_de(eb, modelo)

@@ -108,6 +108,10 @@ _PLANTILLA = """<!DOCTYPE html>
     font-size: 1.05em;
     cursor: text;
   }}
+  /* Las celdas de Graphviz no tienen relleno: sin esto, solo reaccionan el texto y los bordes. */
+  svg g[id^="entidad_"] * {{
+    pointer-events: all;
+  }}
   /* .activo = hover efímero; .fijado = click persistente. Ambos sobre <g> del SVG. */
   svg .activo,
   svg .fijado {{

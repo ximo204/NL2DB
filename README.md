@@ -30,33 +30,13 @@ Developed as a Bachelor's Thesis (TFG) at the University of Granada.
 - **Swappable components:** the NLP backend, ER generator, validator and SQL generator sit behind abstract interfaces.
 - **LLM-free mode:** a simulated backend runs the full pipeline on the bundled examples, with no model required.
 
+Traceability in the validator, from the diagram to the text and back:
+
+![Hovering over diagram elements highlights their source text, and hovering over the text highlights the diagram](docs/traceability.gif)
+
 ## How it works
 
-```mermaid
-flowchart TD
-    subgraph P1["Phase 1: model generation and review"]
-        A["<b>User</b><br/>Enters a natural-language description"]
-        B["<b>NLP module</b><br/>Builds the prompt, queries the LLM"]
-        C["<b>ETL</b><br/>Extracts, transforms and validates the JSON"]
-        D["<b>Intermediate representation manager</b><br/>Stores the model, builds traceability"]
-        H[("<b>Scenario history</b><br/>All interactions, saved to disk")]
-        E["<b>ER generator</b><br/>Renders the diagram"]
-        F["<b>Validator</b><br/>Diagram, text and bidirectional traceability"]
-
-        A --> B --> C --> D --> E --> F
-        D <-. "save / restore" .-> H
-        F -- "Reject: new description" --> A
-        F -. "Previous / next" .-> D
-    end
-
-    subgraph P2["Phase 2: SQL generation"]
-        G["<b>SQL generator</b><br/>Translates the model into DDL statements"]
-        U["<b>User</b><br/>Reviews the SQL"]
-        G --> U
-    end
-
-    F -- "Validate" --> G
-```
+![NL2DB architecture: a generation and review phase, followed by SQL generation once the model is validated](docs/architecture.svg)
 
 | Component | Location | Responsibility |
 |---|---|---|
@@ -198,10 +178,20 @@ Without a dedicated GPU, one description can take around 10 minutes with this mo
 
 `[example]` is `tienda_ropa` (default) or `universidad`. Generated files go to `salidas/` and saved scenarios to `escenarios/`.
 
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+The suite covers the ETL, the relational mapping rules, the ER generator, scenario history and the main workflow, with no LLM required. Generated DDL is executed in an in-memory SQLite database to confirm that it is valid and that keys behave as expected. The SVG rendering tests are skipped if Graphviz is not installed.
+
 ## Project structure
 
 ```text
 NL2DB/
+├── docs/                     # README images
 ├── ejemplos/                 # Example models and hand-authored traceability maps
 ├── src/
 │   ├── comunicacion/         # Flask web interface
@@ -212,11 +202,13 @@ NL2DB/
 │   ├── nlp/                  # LLM backends and prompt
 │   ├── representacion/       # Intermediate representation and scenarios
 │   └── validador/            # Interactive review page
+├── tests/                    # Automated test suite
 ├── app.py                    # Console pipeline
 ├── main.py                   # Direct generator run
 ├── mostrar_validador.py      # Standalone validator generation
 ├── probar_etl.py             # ETL demonstration
-└── requirements.txt
+├── requirements.txt
+└── requirements-dev.txt      # Adds the test dependencies
 ```
 
 ## Design decisions
@@ -237,11 +229,11 @@ NL2DB is an academic prototype, not a production tool.
 - Automatic traceability uses lexical matching, so it is less precise than the hand-authored maps in the examples.
 - The Flask application holds a single shared session and runs in debug mode, so it is meant for local use only.
 - SQL is generated in standard ANSI form and is not executed against a database.
-- There is no automated test suite yet.
 
 ## Roadmap
 
-- [ ] Automated tests for the ETL and generators, with CI through GitHub Actions
+- [x] Automated tests for the ETL, generators and core workflow
+- [ ] Continuous integration through GitHub Actions
 - [ ] Evaluation over a larger set of examples, with a comparison across models
 - [ ] Additional SQL dialects, such as PostgreSQL and MySQL
 - [ ] Additional LLM providers
